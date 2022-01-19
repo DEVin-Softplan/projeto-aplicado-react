@@ -1,33 +1,19 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { Header } from './components/Header';
-
-// import { Consumidor, Consumidor2 } from './components/Consumidor';
-// import { AutenticacaoProvider } from './contexts/autenticacao';
-import { Pokemons } from './components/Pokemons';
-import { Paginacao } from './components/Paginacao/Paginacao';
-import { PokemonProvider } from './contexts/pokemon';
+import { ThemeProvider } from 'styled-components';
 import { Router } from './routes/Router';
+import { GlobalStyle } from './themes/GlobalStyles';
+import { myTheme } from './themes/themes';
 
 function App() {
   return (
     <>
-      <BrowserRouter>
-        <Router />
-      </BrowserRouter>
-
-      {/* <PokemonProvider>
-        <Header />
-
-        <Paginacao />
-
-        <Pokemons />
-      </PokemonProvider> */}
-
-      {/* <AutenticacaoProvider>
-     <Consumidor />
-       <Consumidor2 />
-    </AutenticacaoProvider> */}
+      <ThemeProvider theme={myTheme}>
+        <GlobalStyle />
+        <BrowserRouter>
+          <Router />
+        </BrowserRouter>
+      </ThemeProvider>
     </>
   );
 }
