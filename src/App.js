@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { useState } from 'react/cjs/react.development';
+
 import { ThemeProvider } from 'styled-components';
 import { Router } from './routes/Router';
 import { GlobalStyle } from './themes/GlobalStyles';
