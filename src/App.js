@@ -1,14 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter } from 'react-router-dom';
+
 import { ThemeProvider } from 'styled-components';
 import { Router } from './routes/Router';
 import { GlobalStyle } from './themes/GlobalStyles';
-import { myTheme } from './themes/themes';
+import { myTheme, myThemeDark } from './themes/themes';
 
 function App() {
+  const [dark, setDark] = useState(true);
+
   return (
     <>
-      <ThemeProvider theme={myTheme}>
+      <ThemeProvider theme={dark ? myThemeDark : myTheme}>
         <GlobalStyle />
         <BrowserRouter>
           <Router />
