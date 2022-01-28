@@ -1,33 +1,62 @@
+import { useEffect, useState } from 'react';
+
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 
 import * as Yup from 'yup';
 
+const KEY_LOCALSTORAGE = 'COMENTARIOS';
+
 export const Formulario = () => {
+  const idGame = '1234';
+  const [comentarioJogo, setComentarioJogo] = useState({});
+
+  useEffect(() => {
+    const comentariosStorage = localStorage.getItem(KEY_LOCALSTORAGE);
+    if (comentariosStorage) {
+      const items = JSON.parse(comentariosStorage);
+      const filter = items.find((item) => item.id === idGame);
+      setComentarioJogo(filter);
+    }
+  }, [idGame]);
+
   const handleSubmit = (values, { setSubmitting }) => {
-    setTimeout(() => {
-      alert(JSON.stringify(values, null, 2));
-      setSubmitting(false);
-    }, 1000);
+    const comentariosStorage = localStorage.getItem(KEY_LOCALSTORAGE);
+
+    const comentario = {
+      id: Math.random().toString(16).slice(2),
+      likes: 0,
+      ...values,
+    };
+
+    const comentariosAtual = comentarioJogo?.comentarios ? [...comentarioJogo?.comentarios] : [];
+    const novaListaComentarios = [{ id: idGame, comentarios: [...comentariosAtual, comentario] }];
+
+    if (comentariosStorage) {
+      const itemsLocalStorage = JSON.parse(comentariosStorage);
+      const listaTodosComentariosSemJogoAtual = itemsLocalStorage.filter((item) => item.id !== idGame);
+
+      localStorage.setItem(
+        'COMENTARIOS',
+        JSON.stringify([...listaTodosComentariosSemJogoAtual, ...novaListaComentarios])
+      );
+    } else {
+      localStorage.setItem('COMENTARIOS', JSON.stringify(novaListaComentarios));
+    }
+
+    setComentarioJogo(...novaListaComentarios);
+    setSubmitting(false);
   };
 
   const schema = Yup.object().shape({
+    nome: Yup.string().required('Campo obrigatório'),
     email: Yup.string().required('Campo obrigatório').email('E-mail inválido'),
-    senha: Yup.string().required('Campo obrigatório').min(8, 'Mínimo 8 caracteres'),
-    endereco: Yup.object().shape({
-      rua: Yup.string().required('Campo obrigatório').max(10, 'Máximo 10 caracteres'),
-      numero: Yup.string().nullable(),
-      bairro: Yup.string().required('Campo obrigatório').max(10, 'Máximo 10 caracteres'),
-    }),
+    comentario: Yup.string().required('Campo obrigatório'),
   });
 
   const initialValues = {
+    nome: '',
     email: '',
-    senha: '',
-    endereco: {
-      rua: '',
-      numero: '',
-      bairro: '',
-    },
+    comentario: '',
   };
 
   return (
@@ -37,24 +66,14 @@ export const Formulario = () => {
       <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={schema} validateOnMount>
         {({ isSubmitting, resetForm, isValid }) => (
           <Form>
-            {console.log('isValid', isValid)}
+            <Field name="nome" placeholder="Nome" />
+            <ErrorMessage name="nome" style={{ color: 'red' }} component="span" />
 
             <Field name="email" placeholder="E-mail" />
-
             <ErrorMessage name="email" style={{ color: 'red' }} component="span" />
 
-            <Field name="senha" placeholder="Senha" type="password" />
-
-            <ErrorMessage name="senha" style={{ color: 'red' }} component="span" />
-
-            <Field name="endereco.rua" placeholder="Rua" />
-            <ErrorMessage name="endereco.rua" style={{ color: 'red' }} component="span" />
-
-            <Field name="endereco.numero" placeholder="Número" />
-            <ErrorMessage name="endereco.numero" style={{ color: 'red' }} component="span" />
-
-            <Field name="endereco.bairro" placeholder="Bairro" />
-            <ErrorMessage name="endereco.bairro" style={{ color: 'red' }} component="span" />
+            <Field name="comentario" placeholder="Comentário" />
+            <ErrorMessage name="comentario" style={{ color: 'red' }} component="span" />
 
             <button type="submit" disabled={isSubmitting || !isValid}>
               Enviar
@@ -66,6 +85,10 @@ export const Formulario = () => {
           </Form>
         )}
       </Formik>
+
+      {comentarioJogo?.comentarios?.map((item) => (
+        <p>{item.nome}</p>
+      ))}
     </>
   );
 };
